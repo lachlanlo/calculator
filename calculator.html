@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+
+        #calculator {
+            width: 300px;
+            padding: 20px;
+            background-color: #333;
+            border-radius: 10px;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        #display {
+            width: 100%;
+            height: 50px;
+            background-color: #222;
+            color: #fff;
+            text-align: right;
+            padding: 10px;
+            font-size: 2em;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-gap: 10px;
+        }
+
+        .button {
+            padding: 20px;
+            font-size: 1.5em;
+            background-color: #666;
+            color: white;
+            text-align: center;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .button.operator {
+            background-color: #f39c12;
+        }
+
+        .button.equal {
+            background-color: #27ae60;
+        }
+
+        .button.clear {
+            background-color: #e74c3c;
+            grid-column: span 4; /* Make the clear button span across the whole row */
+        }
+
+        .button.decimal {
+            background-color: #3498db;
+        }
+    </style>
+</head>
+<body>
+
+<div id="calculator">
+    <div id="display">0</div>
+    <div class="button-grid">
+        <div class="button" onclick="appendNumber('7')">7</div>
+        <div class="button" onclick="appendNumber('8')">8</div>
+        <div class="button" onclick="appendNumber('9')">9</div>
+        <div class="button operator" onclick="setOperator('+')">+</div>
+        
+        <div class="button" onclick="appendNumber('4')">4</div>
+        <div class="button" onclick="appendNumber('5')">5</div>
+        <div class="button" onclick="appendNumber('6')">6</div>
+        <div class="button operator" onclick="setOperator('-')">-</div>
+        
+        <div class="button" onclick="appendNumber('1')">1</div>
+        <div class="button" onclick="appendNumber('2')">2</div>
+        <div class="button" onclick="appendNumber('3')">3</div>
+        <div class="button operator" onclick="setOperator('*')">*</div>
+        
+        <div class="button" onclick="appendNumber('0')">0</div>
+        <div class="button decimal" onclick="addDecimal()">.</div>
+        <div class="button equal" onclick="calculate()">=</div>
+        <div class="button operator" onclick="setOperator('/')">/</div>
+
+        <div class="button clear" onclick="clearDisplay()">Clear</div>
+    </div>
+</div>
+
+<script>
+    let firstOperand = '';
+    let secondOperand = '';
+    let currentOperator = null;
+    let shouldResetDisplay = false;
+
+    function appendNumber(number) {
+        const display = document.getElementById('display');
+        if (shouldResetDisplay) {
+            display.innerText = '';
+            shouldResetDisplay = false;
+        }
+        if (display.innerText === '0' && number !== '.') {
+            display.innerText = number;
+        } else {
+            display.innerText += number;
+        }
+    }
+
+    function addDecimal() {
+        const display = document.getElementById('display');
+        if (!display.innerText.includes('.')) {
+            display.innerText += '.';
+        }
+    }
+
+    function setOperator(operator) {
+        if (currentOperator !== null) calculate();
+        firstOperand = document.getElementById('display').innerText;
+        currentOperator = operator;
+        shouldResetDisplay = true;
+    }
+
+    function calculate() {
+        if (currentOperator === null || shouldResetDisplay) return;
+
+        secondOperand = document.getElementById('display').innerText;
+        let result = operate(currentOperator, parseFloat(firstOperand), parseFloat(secondOperand));
+
+        document.getElementById('display').innerText = result.toFixed(2);
+        currentOperator = null;
+    }
+
+    function clearDisplay() {
+        document.getElementById('display').innerText = '0';
+        firstOperand = '';
+        secondOperand = '';
+        currentOperator = null;
+        shouldResetDisplay = false;
+    }
+
+    function operate(operator, num1, num2) {
+        switch (operator) {
+            case '+':
+                return num1 + num2;
+            case '-':
+                return num1 - num2;
+            case '*':
+                return num1 * num2;
+            case '/':
+                if (num2 === 0) {
+                    alert("You can't divide by zero!");
+                    clearDisplay();
+                    return 0;
+                } else {
+                    return num1 / num2;
+                }
+            default:
+                return null;
+        }
+    }
+</script>
+
+</body>
+</html>
